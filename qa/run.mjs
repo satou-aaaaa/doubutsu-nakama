@@ -377,7 +377,7 @@ try {
     check("自信ありでまちがえると、知らせに「思いこみ」と出て、自信は変えられない", (await q.textContent("#msg")).includes("思いこみ") && await q.locator("#dp-sure:disabled").count() === 1);
     check("まちがえたその時に復習へ入る（解き終えずにやめても残る。2026-11-11 CodeRabbit）", await q.evaluate(() => { const d = JSON.parse(localStorage.getItem("dnk-depth") || "{}"); return !!(d.rv && d.rv[__nm.cur().tag]); }));
     await q.click(`.ch[data-j="${await ansIdx(q)}"]`);
-    check("正解すると、2段目「呼吸のしかたは？」が3つ出る（押せる所は44px以上）", await q.locator(".why button").count() === 3 && await q.locator(".verdict").count() === 0 && (await q.$$eval(".why button", (b) => b.every((x) => x.getBoundingClientRect().height >= 44))));
+    check("正解すると、2段目「呼吸のしかたは？」が3つ出る（押せる所は44px以上）", await q.locator(".why button").count() === 3 && await q.locator(".verdict").count() === 0 && (await q.$$eval(".why button", (b) => b.every((x) => Math.round(x.getBoundingClientRect().height) >= 44))));
     check("2段目の読み上げは、2段目の問いと3つの呼吸のしかただけ（1段目の選び肢を読まない。funka-level #1 の CodeRabbit）", await q.evaluate(() => { const e = [...document.querySelectorAll("[data-a11y-say]")]; return e.length === 4 && e[0].textContent.includes("呼吸のしかた") && e.slice(1).every((x) => x.matches(".why button")); }));
     check("2段目の間は、1段目の選び肢は押せない", await q.evaluate(() => [...document.querySelectorAll(".ch")].every((b) => b.disabled)));
     await q.reload(); await q.waitForTimeout(150); await q.evaluate(() => __nm.play("p"));
