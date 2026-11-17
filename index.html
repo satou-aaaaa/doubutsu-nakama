@@ -104,7 +104,7 @@ button.sub:disabled,button.main:disabled{opacity:.45;cursor:default}
 .verdict .why{font-size:1rem;line-height:1.75;margin:0;text-align:left}
 .verdict .why b{color:var(--ok2)}
 .src{font-size:.78rem;color:var(--ink2);margin:0;line-height:1.4;text-align:left}
-.src a{min-height:32px;padding:6px 0}
+.src a{min-height:44px;padding:6px 0}
 .hint{background:var(--paper);border:2px solid var(--gold);border-radius:14px;padding:.6rem .9rem;font-size:.95rem;line-height:1.7}
 .stars{color:var(--gold);letter-spacing:.08em;font-size:1.2rem}
 .stars .off{color:#1d2a3f33}
@@ -644,7 +644,7 @@ function play() {
     <div id="after"></div>`;
   $("back").onclick = home;
   document.querySelectorAll(".ch").forEach((b) => (b.onclick = () => choose(+b.dataset.j)));
-  Depth.bindSure(tag);
+  Depth.bindSure(tag, cur.id + "|" + cur.i);
   if ($("hint")) $("hint").onclick = hint;
   if ($("quit")) $("quit").onclick = () => { const r = load().runs[MODE]; if (!r || r.id !== run.id) { toast("別の画面で先に進んでいます"); return play(); } finish(); }; // 正解した直後でも降りられる（解いた問題は記録ずみ）。別のタブで始めた新しい回は終えない（funka-level #1 の CodeRabbit）
   if (cur.step === 2) askWhy(); else paint();
