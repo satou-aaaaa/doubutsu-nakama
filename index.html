@@ -850,7 +850,7 @@ function load() {
   return tidy(s);
 }
 // 引き継ぎコードなどから入った値を正しい形に直す（数の所に文字が入っていても画面に出さない）
-const num = (v) => { const x = typeof v === "number" || typeof v === "string" ? +v : NaN; return Number.isFinite(x) && x >= 0 ? Math.floor(x) : 0; }; // 数・文字のほかは変換しない（{toString:null} で +v が例外を投げ、ホームが開かなくなる。CodeRabbit kagaku-henka#1）
+const num = Core.num; // 共通部品 game-core（配列・true を数にしない #410）
 // 終えた回の id を覚える（保存に失敗しても、合わせるときに終えた回を戻さない）。古いものから捨てて30まで
 function endRun(s, id) { if (typeof id !== "string") return; const g = s.gone && typeof s.gone === "object" && !Array.isArray(s.gone) ? s.gone : {}; g[id] = 1; const ks = Object.keys(g); for (const k of ks.slice(0, Math.max(0, ks.length - 30))) delete g[k]; s.gone = g; }
 function tidy(s) {
@@ -914,9 +914,9 @@ function nextAch(s) {
 }
 
 // ---- 画面 ----
-function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.setAttribute("role", "status"); d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2000); }
-const buzz = (n = 12) => { try { if (!(window.A11y && A11y.on("calm"))) navigator.vibrate && navigator.vibrate(n); } catch (e) {} };
-const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+function toast(t) { Core.toast(t); } // 知らせの帯（共通部品 game-core。読み上げにも届け、重ねて出さない）
+const buzz = Core.buzz; // 共通部品 game-core（「動きを減らす」では震わせない）
+const esc = Core.esc; // 共通部品 game-core（" と ' も変える。属性の中でも切れない）
 const toTop = () => window.scrollTo(0, 0);
 const srcHtml = (P) => `<p class="src">出典：${P.src.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)}</a>`).join("・")}</p>`;
 const footer = () => `<footer><a href="#" id="f-how">遊び方</a><a href="#" id="f-about">このゲームについて</a><a href="#" data-a11y-open>見やすさ</a><a href="#" data-hk>引き継ぎ</a><a href="${FEEDBACK}" data-feedback="fun" target="_blank" rel="noopener">感想を送る</a><a href="https://ko-fi.com/satouaaaaa" target="_blank" rel="noopener">Ko-fi で応援</a></footer>`;
@@ -1196,7 +1196,7 @@ function endFinish(run) {
 // 共有の文：問題と答えは出さない。まちがい＋ヒントの数で色と形を変える（色だけで分けない）
 const sq = (m) => (m === 0 ? "🟢" : m === 1 ? "🔶" : "🔺");
 function shareText(mode, k, rec) { return `動物なかま分け${mode === "h" ? " 上級" : ""} 第${dayNo(k)}回 ${md(k)}\n${rec.m.map(sq).join("")}${rec.m.every((m) => m === 0) ? " まちがいなし" : ""}`; }
-function untilNext() { const n = jstNow(), ms = 864e5 - (n.getTime() % 864e5); return `${Math.floor(ms / 36e5)}時間${Math.floor((ms % 36e5) / 6e4)}分`; }
+function untilNext() { return Core.untilNext(); } // 次の回までの時間（共通部品 game-core）
 function result(mode, k, first, prec, newAch = []) {
   Core.screens.mark("result"); // 「戻る」でホームへ（sync-template の migrateBack）
   const pr = mode === "p" || mode === "r", ds = JUST || { n: 0, ok: 0 }; JUST = null; // 練習・復習は今日の記録に入れない。自信の当たりは終えた直後だけ出す
